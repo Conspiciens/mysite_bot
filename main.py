@@ -10,6 +10,7 @@ import os
 from tkinter.tix import COLUMN
 from traceback import print_tb
 from turtle import left
+from mysite_bot import login_MySite
 
 loginAndPayInfo = {
     "Username":"",
@@ -17,10 +18,8 @@ loginAndPayInfo = {
     "Semester":"",
     "Classes": [], #
     "Pay":"", # now
-    "Financial Aid" : "" # True or False
-}
+    "Financial Aid" : "", # True or False
 
-CreditCardInfo = {
     "CCN" : "",
     "Expiration" : "",
     "Year" : "",
@@ -166,11 +165,13 @@ class fillInfo(tk.Frame):
         loginAndPayInfo["Password"] = self.passwordInput.get()
 
     def submitCreditInfo(self):
-        CreditCardInfo["CCN"] = self.CCN.get()
-        CreditCardInfo["Expiration"] = self.expirationMonth.get()
-        CreditCardInfo["Year"] = self.expirationYear.get()
-        CreditCardInfo["CVV2"] = self.CVV2.get()
-        CreditCardInfo["postalCode"] = self.postalCode.get()
+        loginAndPayInfo["CCN"] = self.CCN.get()
+        loginAndPayInfo["Expiration"] = self.expirationMonth.get()
+        loginAndPayInfo["Year"] = self.expirationYear.get()
+        loginAndPayInfo["CVV2"] = self.CVV2.get()
+        loginAndPayInfo["postalCode"] = self.postalCode.get()
+
+        login_MySite(**loginAndPayInfo)
 
 
 def main():
