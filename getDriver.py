@@ -13,20 +13,28 @@ def IdentifiyPlatform():
         installWindowDriver()
 
 def installWindowDriver():
-    pass
-
-def installMacDriver():
-    # driverVersion = subprocess.check_output("/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version", shell=True)
     currentDirectory = os.getcwd()
 
     url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
     response = requests.get(url)
     version_number = response.text
 
-    # driverVersion = driverVersion.decode("utf-8").rstrip()
-    # driverVersion = driverVersion.replace("Google Chrome", "").strip()
+    download_url = "https://chromedriver.storage.googleapis.com/" + version_number +"/chromedriver_win32.zip"
 
-    # print(driverVersion)
+    latest_driver_zip = wget.download(download_url,'chromedriver.zip')
+
+    with zipfile.ZipFile(latest_driver_zip, 'r') as zip_ref:
+        zip_ref.extractall(currentDirectory)
+
+    os.remove(latest_driver_zip)
+    os.chmod(currentDirectory + "\\chromedriver.exe", 0o755)
+
+def installMacDriver():
+    currentDirectory = os.getcwd()
+
+    url = 'https://chromedriver.storage.googleapis.com/LATEST_RELEASE'
+    response = requests.get(url)
+    version_number = response.text
 
     download_url = "https://chromedriver.storage.googleapis.com/" + version_number +"/chromedriver_mac64.zip"
 
@@ -37,7 +45,3 @@ def installMacDriver():
 
     os.remove(latest_driver_zip)
     os.chmod(currentDirectory + "/chromedriver", 0o755)
-
-    # "/Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --version"
-
-installMacDriver()

@@ -11,6 +11,7 @@ from tkinter.tix import COLUMN
 from traceback import print_tb
 from turtle import left
 from mysite_bot import login_MySite
+from getDriver import IdentifiyPlatform
 
 loginAndPayInfo = {
     "Username":"",
@@ -25,6 +26,8 @@ loginAndPayInfo = {
     "Year" : "",
     "CVV2" : "",
     "postalCode" : ""
+
+    "scheduleDate" : "",
 }
 
 class fillInfo(tk.Frame):
@@ -46,8 +49,7 @@ class fillInfo(tk.Frame):
         self.expirationYear = tk.StringVar()
         self.CVV2 = tk.StringVar()
         self.postalCode = tk.StringVar()
-
-
+        self.date = tk.StringVar()
 
         self.selectSemester.set(0)
         self.payNowQues.set(0)
@@ -87,7 +89,7 @@ class fillInfo(tk.Frame):
         # Pay
         self.payLabel = tk.Label(self.master, text="When would like to pay?")
         self.payNow = tk.Radiobutton(self.master, text="Now", variable=self.payNowQues, value=1, command=self.paymentNowQuestion)
-        self.payLater = tk.Radiobutton(self.master, text="Later", variable=self.paymentNowQuestion, value=0, command=self.paymentNowQuestion())
+        self.payLater = tk.Radiobutton(self.master, text="Later", variable=self.paymentNowQuestion, value=0, command=self.paymentNowQuestion)
         self.payLabel.place(x = 20, y = 260)
         self.payLater.place(x = 20, y = 300)
         self.payNow.place(x = 20, y = 280)
@@ -106,7 +108,6 @@ class fillInfo(tk.Frame):
 
 
         # Credit Card Information
-
         self.cnn = tk.Label(self.master, text="Enter your Credit Card Numer")
         self.ccnEntry = tk.Entry(self.master, textvariable = self.CCN)
         self.cnn.place(x = 500, y = 20)
@@ -132,8 +133,17 @@ class fillInfo(tk.Frame):
         self.postalCodeLabel.place(x = 500, y = 260)
         self.postalCodeInput.place(x = 500, y = 290)
 
+        self.getDateLabel = tk.Label(self.master, text="Enter the date of registration")
+        self.getDateInput = tk.Entry(self.master, textvariable = self.date)
+
         self.submitCredit = tk.Button(self.master, text="Submit", command=self.submitCreditInfo)
         self.submitCredit.place(x = 500, y = 320)
+
+        # Button to install Chromedriver
+        self.installChromeDriverButton = tk.Label(self.master, text="Install ChromeDriver")
+        self.installChromeDriver = tk.Button(self.master, text="Install", command=self.installDriver)
+        self.installChromeDriverButton.place(x = 500, y = 400)
+        self.installChromeDriver.place(x = 500, y = 430)
 
     # Change the Semester in the Dictionary
     def fillSemDic(self):
@@ -171,8 +181,12 @@ class fillInfo(tk.Frame):
         loginAndPayInfo["CVV2"] = self.CVV2.get()
         loginAndPayInfo["postalCode"] = self.postalCode.get()
 
+        loginAndPayInfo["scheduleDate"] = self.date.get()
+
         login_MySite(**loginAndPayInfo)
 
+    def installDriver(self):
+        IdentifiyPlatform()
 
 def main():
     root = tk.Tk()

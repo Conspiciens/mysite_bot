@@ -1,28 +1,42 @@
 from logging import exception, log
 from selenium.common.exceptions import ElementNotInteractableException, ElementNotSelectableException
+from selenium.common.exceptions import TimeoutException
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium import webdriver
-from selenium import TimeoutException
 from dotenv import load_dotenv
-import datetime
+# import datetime
+from datetime import datetime
 import os
 import time
+from sys import platform
 
 # load_dotenv("private.env")
 
-def run_till_time():
-    return
+def run_till_time(getDate):
+    ate_time = datetime.strptime(getDate, "%m/%d/%Y %H:%M:%S")
+    total_time = datetime.now() - ate_time
+
+    time.sleep(total_seconds())
 
 def login_MySite(**basicInfoDic):
+    run_till_time(basicInfoDic["scheduleDate"])
+
     currentDirectory = os.getcwd()
-    currentDirectory = currentDirectory + "/chromedriver"
+
+    # For Windows and Mac OS, Sorry Linux bois ;(
+    if platform == "darwin":
+        currentDirectory = currentDirectory + "/chromedriver"
+    elif platform == "win32":
+        currentDirectory = currentDirectory + "\\chromedriver.exe"
+
     options = webdriver.ChromeOptions()
-    # options.add_argument("--headless")
+    options.add_argument("--headless")
     options.add_argument('user-agent = Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2228.0 Safari/537.36')
 
+    # change directory for windows \\
     driver = webdriver.Chrome(chrome_options=options, executable_path=currentDirectory)
 
     driver.get("https://mysite.socccd.edu/Portal/Login.aspx")
@@ -42,6 +56,9 @@ def login_MySite(**basicInfoDic):
     CV = basicInfoDic["CVV2"]
     BAPS = basicInfoDic["postalCode"]
 
+    # Determine what term it is for JS
+    bodyContent = "ctl00_BodyContent_Term0_TermName"
+
 
     # Get the textbox within mysite
     usernameTextBox = driver.find_element(By.ID, "txtUsername")
@@ -58,31 +75,34 @@ def login_MySite(**basicInfoDic):
     driver.get("https://mysite.socccd.edu/Portal/MySite/Classes/Registration/SelectTerm.aspx")
 
     # Get the current term and the future term
-    time.sleep(3)
+    CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term0_TermName"))).text
+
     try:
-        CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term0_TermName"))).text
-        # driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").text
+        FS = driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").text
+    except NoSuchElementException:
+
         FS = driver.find_element(By.ID, "ctl00_BodyContent_Term1_TermName").text
-    except TimeoutException:
-        print("Not Open")
+
+        # print("Registration is currently closed 11:00 pm - 6:00 am")
 
     # Get the Semster name and check whether the semster are the same
     if (str(FS.rsplit(" ", 1)[0]) == str(semester)):
 
-        # Click the correct semester
-        driver.find_element(By.ID, "ctl00_BodyContent_Term1_TermName").click()
-
-        #
-        driver.find_element(By.ID, "ctl00_BodyContent_Term1_AddDropClasses").click()
+        if "Term0" in FS:
+            # Click the correct semester
+            driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").click()
+        else:
+            # Add or Drop Classes button
+            driver.find_element(By.ID, "ctl00_BodyContent_Term1_AddDropClasses").click()
 
         # selenium.common.exceptions.NoSuchElementException
         # selenium.common.exceptions.NoSuchElementException
 
+        # time.sleep(3)
 
-        time.sleep(3)
         # Insert all classes into the textbox
-        for oneClasses in classes.split(" "):
-            print(oneClasses)
+        for oneClasses in classes:
+            # print(oneClasses)
             driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClasses)
             driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_btnAddClass").click()
 
@@ -94,7 +114,7 @@ def login_MySite(**basicInfoDic):
         # Completed with Charges and credits
         driver.find_element(By.ID, "ctl00_BodyContent_btnNext").click()
 
-        # ---- ADD ABILITY TO ADD ASB ----
+        # ---- ADD ABILITY TO ADD ASB ---- #
 
         class_pay = driver.find_element(By.ID, "rdbPaymentOptionPayNow").text
         print(class_pay.rsplit(" ")[0])
@@ -140,7 +160,6 @@ def login_MySite(**basicInfoDic):
             # navLinkCheckMoney
 
 
-
     if (str(CS.rsplit(" ", 1)) == str(semester)):
         return
 
@@ -150,5 +169,6 @@ def login_MySite(**basicInfoDic):
 
     # driver.close()
 
+run_till_time("03/18/2002 3:30:00")
 # login_MySite()
 # getDicInfo()
