@@ -6,7 +6,7 @@ import os
 from sys import platform
 # from win32com.client import Dispatch
 
-def IdentifiyPlatform():
+def IdentifiyPlatformthenInstallDriver():
     if platform == "darwin":
         installMacDriver()
     elif platform == "win32":

@@ -77,11 +77,11 @@ def login_MySite(**basicInfoDic):
 
     # Get the current term and the future term
     try:
-        CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term0_TermName"))).text
+        # CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term0_TermName"))).text
         FS = driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").text
     except NoSuchElementException:
 
-        CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term1_TermName"))).text
+        # CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term1_TermName"))).text
         FS = driver.find_element(By.ID, "ctl00_BodyContent_Term1_TermName").text
 
         # print("Registration is currently closed 11:00 pm - 6:00 am")
@@ -99,12 +99,10 @@ def login_MySite(**basicInfoDic):
         # selenium.common.exceptions.NoSuchElementException
         # selenium.common.exceptions.NoSuchElementException
 
-        # time.sleep(3)
-
         # Insert all classes into the textbox
-        for oneClasses in classes:
-            # print(oneClasses)
-            driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClasses)
+        for oneClass in classes:
+            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClass)))
+            # driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClasses)
             driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_btnAddClass").click()
 
         time.sleep(5)

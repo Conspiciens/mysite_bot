@@ -8,10 +8,11 @@ from textwrap import fill
 import tkinter as tk;
 import os
 from tkinter.tix import COLUMN
+from tkinter import END
 from traceback import print_tb
 from turtle import left
 from mysite_bot import login_MySite
-from getDriver import IdentifiyPlatform
+from getDriver import IdentifiyPlatformthenInstallDriver
 
 loginAndPayInfo = {
     "Username":"",
@@ -138,17 +139,19 @@ class fillInfo(tk.Frame):
         self.postalCodeLabel.place(x = 500, y = 260)
         self.postalCodeInput.place(x = 500, y = 290)
 
-        self.getDateLabel = tk.Label(self.master, text="Enter the date of registration")
+        self.getDateLabel = tk.Label(self.master, text="Enter the date and time of registration Ex. 03/18/2002 3:30:00")
         self.getDateInput = tk.Entry(self.master, textvariable = self.date)
+        self.getDateLabel.place(x = 500, y = 320)
+        self.getDateInput.place(x = 500, y = 350)
 
         self.submitCredit = tk.Button(self.master, text="Submit", command=self.submitCreditInfo)
-        self.submitCredit.place(x = 500, y = 320)
+        self.submitCredit.place(x = 500, y = 380)
 
         # Button to install Chromedriver
         self.installChromeDriverButton = tk.Label(self.master, text="Install ChromeDriver")
         self.installChromeDriver = tk.Button(self.master, text="Install", command=self.installDriver)
-        self.installChromeDriverButton.place(x = 500, y = 400)
-        self.installChromeDriver.place(x = 500, y = 430)
+        self.installChromeDriverButton.place(x = 500, y = 450)
+        self.installChromeDriver.place(x = 500, y = 480)
 
     # Change the Semester in the Dictionary
     def fillSemDic(self):
@@ -173,13 +176,26 @@ class fillInfo(tk.Frame):
             loginAndPayInfo["Financial Aid"] = "False"
 
     def inputClass(self):
+        # Check class variables (confusing)
+        self.classNumInput.set("")
         loginAndPayInfo["Classes"].append(self.classNumInput.get())
 
     def submitData(self):
+        self.usernameInput.set("")
+        self.passwordInput.set("")
+
         loginAndPayInfo["Username"] = self.usernameInput.get()
         loginAndPayInfo["Password"] = self.passwordInput.get()
 
+
     def submitCreditInfo(self):
+        self.CCN.set("")
+        self.expirationMonth.set("")
+        self.expirationYear.set("")
+        self.CVV2.delete.set("")
+        self.postalCode.set("")
+        self.date.set("")
+
         loginAndPayInfo["CCN"] = self.CCN.get()
         loginAndPayInfo["Expiration"] = self.expirationMonth.get()
         loginAndPayInfo["Year"] = self.expirationYear.get()
@@ -191,7 +207,7 @@ class fillInfo(tk.Frame):
         login_MySite(**loginAndPayInfo)
 
     def installDriver(self):
-        IdentifiyPlatform()
+        IdentifiyPlatformthenInstallDriver()
 
 def main():
     root = tk.Tk()
