@@ -25,15 +25,20 @@ loginAndPayInfo = {
     "Expiration" : "",
     "Year" : "",
     "CVV2" : "",
-    "postalCode" : ""
+    "postalCode" : "",
 
-    "scheduleDate" : "",
+    "scheduleDate" : ""
 }
 
 class fillInfo(tk.Frame):
     def __init__(self, master):
         tk.Frame.__init__(self, master)
         self.master = master
+
+        # Set basic visual features
+        master.geometry("800x600")
+        master.title("Automation Factory")
+        # master.iconbitmap("")
 
         # Variables
         self.selectSemester = tk.IntVar()
@@ -51,8 +56,8 @@ class fillInfo(tk.Frame):
         self.postalCode = tk.StringVar()
         self.date = tk.StringVar()
 
-        self.selectSemester.set(0)
-        self.payNowQues.set(0)
+        # self.selectSemester.set(0)
+        # self.payNowQues.set(0)
 
         # Basic Information
 
@@ -89,7 +94,7 @@ class fillInfo(tk.Frame):
         # Pay
         self.payLabel = tk.Label(self.master, text="When would like to pay?")
         self.payNow = tk.Radiobutton(self.master, text="Now", variable=self.payNowQues, value=1, command=self.paymentNowQuestion)
-        self.payLater = tk.Radiobutton(self.master, text="Later", variable=self.paymentNowQuestion, value=0, command=self.paymentNowQuestion)
+        self.payLater = tk.Radiobutton(self.master, text="Later", variable=self.payNowQues, value=0, command=self.paymentNowQuestion)
         self.payLabel.place(x = 20, y = 260)
         self.payLater.place(x = 20, y = 300)
         self.payNow.place(x = 20, y = 280)
