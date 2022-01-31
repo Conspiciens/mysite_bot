@@ -192,7 +192,7 @@ class fillInfo(tk.Frame):
         self.CCN.set("")
         self.expirationMonth.set("")
         self.expirationYear.set("")
-        self.CVV2.delete.set("")
+        self.CVV2.set("")
         self.postalCode.set("")
         self.date.set("")
 

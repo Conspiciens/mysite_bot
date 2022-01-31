@@ -14,11 +14,14 @@ from sys import platform
 
 def run_till_time(getDate):
     # Convert the datetime to be able to convert to seconds
-    ate_time = datetime.strptime(getDate, "%m/%d/%Y %H:%M:%S")
-    total_time = datetime.now() - ate_time
+    if getDate == "":
+        pass
+    else:
+        ate_time = datetime.strptime(getDate, "%m/%d/%Y %H:%M:%S")
+        total_time = datetime.now() - ate_time
 
-    # Make the program sleep
-    time.sleep(total_time.total_seconds())
+        # Make the program sleep
+        time.sleep(total_time.total_seconds())
 
 def login_MySite(**basicInfoDic):
     run_till_time(basicInfoDic["scheduleDate"])
@@ -78,89 +81,85 @@ def login_MySite(**basicInfoDic):
     # Get the current term and the future term
     try:
         # CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term0_TermName"))).text
-        FS = driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").text
-    except NoSuchElementException:
+        # FS = driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").text
+        FS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term0_TermName"))).text
+
+        # Click the correct semester
+        # Add or drop classes button
+        driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").click()
+        driver.find_element(By.ID, "ctl00_BodyContent_Term0_AddDropClasses").click()
+
+    except TimeoutException:
 
         # CS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term1_TermName"))).text
-        FS = driver.find_element(By.ID, "ctl00_BodyContent_Term1_TermName").text
+        FS = WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_Term1_TermName"))).text
 
-        # print("Registration is currently closed 11:00 pm - 6:00 am")
+        # Click the correct semester
+        # Add or drop classes button
+        driver.find_element(By.ID, "ctl00_BodyContent_Term1_TermName").click()
+        driver.find_element(By.ID, "ctl00_BodyContent_Term1_AddDropClasses").click()
 
-    # Get the Semster name and check whether the semster are the same
-    if (str(FS.rsplit(" ", 1)[0]) == str(semester)):
+    # Add an exception if there is no result
+    # except TimeoutException:
+    # print("Registration is currently closed 11:00 pm - 6:00 am")
 
-        if "Term0" in FS:
-            # Click the correct semester
-            driver.find_element(By.ID, "ctl00_BodyContent_Term0_TermName").click()
-        else:
-            # Add or Drop Classes button
-            driver.find_element(By.ID, "ctl00_BodyContent_Term1_AddDropClasses").click()
+    # Insert all classes into the textbox
+    for oneClass in classes:
+        WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClass)))
+        # driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClasses)
+        driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_btnAddClass").click()
 
-        # selenium.common.exceptions.NoSuchElementException
-        # selenium.common.exceptions.NoSuchElementException
+    # After completed with assigning up for class (next button)
+    # driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_btnNext").click()
+    WebDriverWait(driver, 5).until(By.ID, "ctl00_BodyContent_ucScheduleBuilder_btnNext").click()
 
-        # Insert all classes into the textbox
-        for oneClass in classes:
-            WebDriverWait(driver, 5).until(EC.presence_of_element_located((By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClass)))
-            # driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber").send_keys(oneClasses)
-            driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_btnAddClass").click()
+    # Completed with Charges and credits
+    driver.find_element(By.ID, "ctl00_BodyContent_btnNext").click()
+
+    # ---- ADD ABILITY TO ADD ASB ---- #
+
+    class_pay = driver.find_element(By.ID, "rdbPaymentOptionPayNow").text
+    print(class_pay.rsplit(" ")[0])
+
+    # PAY NOW
+    if (str(class_pay.rsplit(" ")[0] == str(payment))):
+        driver.find_element(By.ID, "rdbPaymentOptionPayNow").click()
 
         time.sleep(5)
 
-        # After completed with assigning up for class
-        driver.find_element(By.ID, "ctl00_BodyContent_ucScheduleBuilder_btnNext").click()
+        # Credit Card Number
+        driver.find_element(By.ID, "txtCreditCardNumber").send_keys(creditNum)
 
-        # Completed with Charges and credits
-        driver.find_element(By.ID, "ctl00_BodyContent_btnNext").click()
+        # CVV2
+        driver.find_element(By.ID, "txtCVV2").send_keys(CV)
 
-        # ---- ADD ABILITY TO ADD ASB ---- #
+        # Billing Address Zip / Postal Code
+        driver.find_element(By.ID, "txtZipCode").send_keys(BAPS)
 
-        class_pay = driver.find_element(By.ID, "rdbPaymentOptionPayNow").text
-        print(class_pay.rsplit(" ")[0])
+        # Expiration Date
+        expDate = Select(driver.find_element(By.ID, "ddlExpirationMonth"))
+        expDate.select_by_visible_text(expirationMonth)
 
-        # PAY NOW
-        if (str(class_pay.rsplit(" ")[0] == str(payment))):
-            driver.find_element(By.ID, "rdbPaymentOptionPayNow").click()
+        # Expiration Year
+        expYear = Select(driver.find_element(By.ID, "ddlExpirationYear"))
+        expYear.select_by_visible_text(expirationYear)
 
-            time.sleep(5)
+        # Complete registration
+        driver.find_element(By.ID, "btnMakePaymentLower").click()
 
-            # Credit Card Number
-            driver.find_element(By.ID, "txtCreditCardNumber").send_keys(creditNum)
+    # Pay Later
+    else:
+        driver.find_element(By.ID, "rdbPaymentOptionPayLater").click()
 
-            # CVV2
-            driver.find_element(By.ID, "txtCVV2").send_keys(CV)
+        # Finanical Aid
+        textFA = driver.find_element(By.XPATH, "//*[@id=\"navLinkFinancialAid\"]/span/label").text
 
-            # Billing Address Zip / Postal Code
-            driver.find_element(By.ID, "txtZipCode").send_keys(BAPS)
+        if (textFA == FA):
+            driver.find_element(By.ID, "rdbFinAidOptionApplied").click()
 
-            # Expiration Date
-            expDate = Select(driver.find_element(By.ID, "ddlExpirationMonth"))
-            expDate.select_by_visible_text(expirationMonth)
+        # rdbFinAidOptionPending
 
-            # Expiration Year
-            expYear = Select(driver.find_element(By.ID, "ddlExpirationYear"))
-            expYear.select_by_visible_text(expirationYear)
-
-            # Complete registration
-            driver.find_element(By.ID, "btnMakePaymentLower").click()
-
-        # Pay Later
-        else:
-            driver.find_element(By.ID, "rdbPaymentOptionPayLater").click()
-
-            # Finanical Aid
-            textFA = driver.find_element(By.XPATH, "//*[@id=\"navLinkFinancialAid\"]/span/label").text
-
-            if (textFA == FA):
-                driver.find_element(By.ID, "rdbFinAidOptionApplied").click()
-
-            # rdbFinAidOptionPending
-
-            # navLinkCheckMoney
-
-
-    if (str(CS.rsplit(" ", 1)) == str(semester)):
-        return
+        # navLinkCheckMoney
 
     # ctl00_BodyContent_ucScheduleBuilder_txtTicketNumber
     # ctl00_BodyContent_Term1_AddDropClasses
